@@ -2,7 +2,7 @@ import UIKit
 import CoreLocation
 
 protocol BeaconInfoDelegate {
-    func foundBeacons(num: Int)
+    func foundBeacons(_ num: Int)
     func enteredRegion()
     func exitedRegion()
 }
@@ -21,16 +21,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     var delegate: BeaconInfoDelegate?
     
     var authStatusStrings = [
-        CLAuthorizationStatus.NotDetermined: "Not determined",
-        CLAuthorizationStatus.Restricted: "Restricted",
-        CLAuthorizationStatus.Denied: "Denied",
-        CLAuthorizationStatus.AuthorizedAlways: "Authorized always",
-        CLAuthorizationStatus.AuthorizedWhenInUse: "Authorized when in use",
+        CLAuthorizationStatus.notDetermined: "Not determined",
+        CLAuthorizationStatus.restricted: "Restricted",
+        CLAuthorizationStatus.denied: "Denied",
+        CLAuthorizationStatus.authorizedAlways: "Authorized always",
+        CLAuthorizationStatus.authorizedWhenInUse: "Authorized when in use",
     ]
     
     // MARK: - AppDelegate
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         setupLocationManager()
         checkAuthorization()
         subscribeToBeacons()
@@ -54,39 +54,39 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func subscribeToBeacons() {
         print("Device supports Bluetooth beacon ranging: \(CLLocationManager.isRangingAvailable())")
         
-        let uuid = NSUUID.init(UUIDString: "A495DEAD-C5B1-4B44-B512-1370F02D74DE")
+        let uuid = UUID.init(uuidString: "A495DEAD-C5B1-4B44-B512-1370F02D74DE")
         let major: CLBeaconMajorValue = 0xBEEF
         let minor: CLBeaconMinorValue = 0xCAFE
         
         let region = CLBeaconRegion(proximityUUID: uuid!, major: major, minor: minor, identifier: "Bean iBeacon")
         
-        locationManager!.startMonitoringForRegion(region)
-        locationManager!.startRangingBeaconsInRegion(region)
+        locationManager!.startMonitoring(for: region)
+        locationManager!.startRangingBeacons(in: region)
         
         let majorHex = String(format: "%X", major)
         let minorHex = String(format: "%X", minor)
-        print("Scanning for iBeacons with UUID: \(uuid!.UUIDString), major: \(majorHex), minor: \(minorHex)")
+        print("Scanning for iBeacons with UUID: \(uuid!.uuidString), major: \(majorHex), minor: \(minorHex)")
     }
     
     // MARK: - CLLocationManagerDelegate
     
     // MARK: Incoming data
     
-    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         print("Location auth status changed: \(authStatusStrings[status]!)")
     }
     
-    func locationManager(manager: CLLocationManager, didEnterRegion region: CLRegion) {
+    func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         print("Entered region: \(region.identifier)")
         delegate?.enteredRegion()
     }
     
-    func locationManager(manager: CLLocationManager, didExitRegion region: CLRegion) {
+    func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         print("Exited region: \(region.identifier)")
         delegate?.exitedRegion()
     }
     
-    func locationManager(manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], inRegion region: CLBeaconRegion) {
+    func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
         if (beacons.count > 0) {
             print("Found \(beacons.count) iBeacon(s) in region: \(region.identifier)")
             for beacon in beacons {
@@ -98,11 +98,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     
     // MARK: Handling errors
     
-    func locationManager(manager: CLLocationManager, monitoringDidFailForRegion region: CLRegion?, withError error: NSError) {
+    func locationManager(_ manager: CLLocationManager, monitoringDidFailFor region: CLRegion?, withError error: Error) {
         print("Monitoring failed for region: \(region?.identifier), error: \(error)")
     }
     
-    func locationManager(manager: CLLocationManager, rangingBeaconsDidFailForRegion region: CLBeaconRegion, withError error: NSError) {
+    func locationManager(_ manager: CLLocationManager, rangingBeaconsDidFailFor region: CLBeaconRegion, withError error: Error) {
         print("Ranging beacons failed for region: \(region.identifier), error: \(error)")        
     }
 

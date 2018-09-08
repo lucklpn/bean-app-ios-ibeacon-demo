@@ -20,17 +20,17 @@ class ViewController: UIViewController, BeaconInfoDelegate {
     // MARK: - UIViewController
     
     override func viewDidLoad() {
-        let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.delegate = self
     }
     
-    override func preferredStatusBarStyle() -> UIStatusBarStyle {
-        return .LightContent
+    override var preferredStatusBarStyle : UIStatusBarStyle {
+        return .lightContent
     }
     
     // MARK: - BeaconInfoDelegate
     
-    func foundBeacons(num: Int) {
+    func foundBeacons(_ num: Int) {
         beaconCountLabel.text = "\(num)"
         if (num == 1) {
             beaconsFoundLabel.text = "iBeacon found"
